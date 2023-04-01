@@ -96,7 +96,7 @@ const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter,
   console.log('params', pagination, filters, sorter, extra);
 };
 
-const Hafalan = () => {
+const Product = () =>  {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -104,7 +104,7 @@ const Hafalan = () => {
     <div>
       <Row justify='space-between'>
         <Col>
-          <h1>Hafalan</h1>
+          <h1>Product</h1>
         </Col>
         <Col>
         <Button type="primary" onClick={() => setIsModalOpen(true)}>
@@ -145,4 +145,4 @@ const Hafalan = () => {
   )
 };
 
-export default Hafalan;
+export default Product;

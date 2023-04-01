@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Checkbox, Col, Form, Input, Row, Table } from 'antd';
+import { Button, Checkbox, Col, Form, Input, Row, Table as AntdTable } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { Modal } from '@/components';
 
@@ -96,7 +96,7 @@ const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter,
   console.log('params', pagination, filters, sorter, extra);
 };
 
-const Kelas = () =>  {
+const Table = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -104,7 +104,7 @@ const Kelas = () =>  {
     <div>
       <Row justify='space-between'>
         <Col>
-          <h1>Kelas</h1>
+          <h1>Table</h1>
         </Col>
         <Col>
         <Button type="primary" onClick={() => setIsModalOpen(true)}>
@@ -112,7 +112,7 @@ const Kelas = () =>  {
         </Button>
       </Col>
       </Row>
-      <Table columns={columns} dataSource={data} onChange={onChange} />
+      <AntdTable columns={columns} dataSource={data} onChange={onChange} />
       <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
       <Form
         name="basic"
@@ -145,4 +145,4 @@ const Kelas = () =>  {
   )
 };
 
-export default Kelas;
+export default Table;

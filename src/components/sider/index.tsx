@@ -5,9 +5,9 @@ import { Layout, Menu, theme } from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
 const listNav = [
-  "Kelas",
-  "User",
-  "Hafalan"
+  "Product",
+  "Table",
+  "Order"
 ]
 
 const Siderbar = ({children}:any) => {
