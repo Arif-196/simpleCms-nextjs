@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Checkbox, Col, Form, Input, Row, Select, Table, Tabs } from 'antd';
-import type { ColumnsType, TableProps } from 'antd/es/table';
+import {
+  Button, Col, Form, Input, Row, Select, Table, Tabs
+} from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import { Modal } from '@/components';
 
-const {TabPane} = Tabs
+const { TabPane } = Tabs;
 const { Option } = Select;
-
 
 interface DataType {
   key: React.Key;
@@ -34,8 +35,7 @@ const columns: ColumnsType<DataType> = [
           {
             text: 'Green',
             value: 'Green',
-          },
-          {
+          }, {
             text: 'Black',
             value: 'Black',
           },
@@ -44,14 +44,14 @@ const columns: ColumnsType<DataType> = [
     ],
     // specify the condition of filtering result
     // here is that finding the name started with `value`
-    sorter: (a, b) => a.name.length - b.name.length,
+    sorter: ( a, b ) => a.name.length - b.name.length,
     sortDirections: ['descend'],
   },
   {
     title: 'Age',
     dataIndex: 'age',
     defaultSortOrder: 'descend',
-    sorter: (a, b) => a.age - b.age,
+    sorter: ( a, b ) => a.age - b.age,
   },
   {
     title: 'Address',
@@ -60,8 +60,7 @@ const columns: ColumnsType<DataType> = [
       {
         text: 'London',
         value: 'London',
-      },
-      {
+      }, {
         text: 'New York',
         value: 'New York',
       },
@@ -123,149 +122,204 @@ const data2 = [
   },
 ];
 
-const fieldMessage =  'Tidak boleh kosong'
+const fieldMessage =  'Tidak boleh kosong';
 
 const User = () =>  {
 
-  const [tabActive, setTabActive] = useState('guru')
+  const [tabActive, setTabActive] = useState( 'guru' );
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState( false );
 
-  const renderForm = useMemo(() => {
-    if(tabActive === "guru") {
+  const renderForm = useMemo( () => {
+    if ( tabActive === 'guru' ) {
       return (
         <React.Fragment>
           <Form.Item
-            label="Nip"
-            name="nip"
-            rules={[{ required: true, message: fieldMessage }]}
+            label='Nip'
+            name='nip'
+            rules={ [
+              {
+                required: true,
+                message: fieldMessage
+              }
+            ] }
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            label="Nama Lengkap"
-            name="fullName"
-            rules={[{ required: true, message: fieldMessage }]}
+            label='Nama Lengkap'
+            name='fullName'
+            rules={ [
+              {
+                required: true,
+                message: fieldMessage
+              }
+            ] }
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="Alamat"
-            name="alamat"
-            rules={[{ required: true, message: fieldMessage }]}
+            label='Alamat'
+            name='alamat'
+            rules={ [
+              {
+                required: true,
+                message: fieldMessage
+              }
+            ] }
           >
             <Input.TextArea />
           </Form.Item>
           <Form.Item
-            name="gender"
-            label="Jenis Kelamin"
-            rules={[{ required: true, message: 'Mohon Pilih Jenis Kelamin' }]}
+            name='gender'
+            label='Jenis Kelamin'
+            rules={ [
+              {
+                required: true,
+                message: 'Mohon Pilih Jenis Kelamin'
+              }
+            ] }
           >
-            <Select placeholder="Pilih Jenis Kelamin">
-              <Option value="laki">Laki-laki</Option>
-              <Option value="perempuan">Perempuan</Option>
+            <Select placeholder='Pilih Jenis Kelamin'>
+              <Option value='laki'>Laki-laki</Option>
+              <Option value='perempuan'>Perempuan</Option>
             </Select>
           </Form.Item>
           <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: fieldMessage }]}
+            label='Password'
+            name='password'
+            rules={ [
+              {
+                required: true,
+                message: fieldMessage
+              }
+            ] }
           >
             <Input.Password />
           </Form.Item>
         </React.Fragment>
-      )
+      );
     }
 
     return (
       <React.Fragment>
-      <Form.Item
-        label="Nis"
-        name="nis"
-        rules={[{ required: true, message: fieldMessage }]}
-      >
-        <Input />
-      </Form.Item>
+        <Form.Item
+          label='Nis'
+          name='nis'
+          rules={ [
+            {
+              required: true,
+              message: fieldMessage
+            }
+          ] }
+        >
+          <Input />
+        </Form.Item>
 
-      <Form.Item
-        label="Nama Lengkap"
-        name="fullName"
-        rules={[{ required: true, message: fieldMessage }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        label="Alamat"
-        name="alamat"
-        rules={[{ required: true, message: fieldMessage }]}
-      >
-        <Input.TextArea />
-      </Form.Item>
-      <Form.Item
-        name="gender"
-        label="Jenis Kelamin"
-        rules={[{ required: true, message: 'Mohon Pilih Jenis Kelamin' }]}
-      >
-        <Select placeholder="Pilih Jenis Kelamin">
-          <Option value="laki">Laki-laki</Option>
-          <Option value="perempuan">Perempuan</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item
-        label="Password"
-        name="password"
-        rules={[{ required: true, message: fieldMessage }]}
-      >
-        <Input.Password />
-      </Form.Item>
-      <Form.Item
-        name="kode_kelas"
-        label="Kode Kelas"
-        rules={[{ required: true, message: 'Mohon Pilih Kode Kelas' }]}
-      >
-        <Select placeholder="Pilih Kode Kelas">
-          <Option value="01TPLM001">01TPLM001</Option>
-          <Option value="01TPLM002">01TPLM002</Option>
-          <Option value="01TPLM003">01TPLM003</Option>
-          <Option value="01TPLM004">01TPLM004</Option>
-        </Select>
-      </Form.Item>
-    </React.Fragment>
-    )
-  },[tabActive])
+        <Form.Item
+          label='Nama Lengkap'
+          name='fullName'
+          rules={ [
+            {
+              required: true,
+              message: fieldMessage
+            }
+          ] }
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label='Alamat'
+          name='alamat'
+          rules={ [
+            {
+              required: true,
+              message: fieldMessage
+            }
+          ] }
+        >
+          <Input.TextArea />
+        </Form.Item>
+        <Form.Item
+          name='gender'
+          label='Jenis Kelamin'
+          rules={ [
+            {
+              required: true,
+              message: 'Mohon Pilih Jenis Kelamin'
+            }
+          ] }
+        >
+          <Select placeholder='Pilih Jenis Kelamin'>
+            <Option value='laki'>Laki-laki</Option>
+            <Option value='perempuan'>Perempuan</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item
+          label='Password'
+          name='password'
+          rules={ [
+            {
+              required: true,
+              message: fieldMessage
+            }
+          ] }
+        >
+          <Input.Password />
+        </Form.Item>
+        <Form.Item
+          name='kode_kelas'
+          label='Kode Kelas'
+          rules={ [
+            {
+              required: true,
+              message: 'Mohon Pilih Kode Kelas'
+            }
+          ] }
+        >
+          <Select placeholder='Pilih Kode Kelas'>
+            <Option value='01TPLM001'>01TPLM001</Option>
+            <Option value='01TPLM002'>01TPLM002</Option>
+            <Option value='01TPLM003'>01TPLM003</Option>
+            <Option value='01TPLM004'>01TPLM004</Option>
+          </Select>
+        </Form.Item>
+      </React.Fragment>
+    );
+  }, [tabActive] );
 
   return (
     <div>
       <Row justify='end'>
         <Col>
-        <Button type="primary" onClick={() => setIsModalOpen(true)}>
-          Tambah {tabActive.substring(0,1).toUpperCase() + tabActive.substring(1,tabActive.length)}
-        </Button>
-      </Col>
+          <Button type='primary' onClick={ () => setIsModalOpen( true ) }>
+          Tambah { tabActive.substring( 0, 1 ).toUpperCase() + tabActive.substring( 1, tabActive.length ) }
+          </Button>
+        </Col>
       </Row>
-      <Tabs defaultActiveKey={tabActive} onChange={e => setTabActive(e)}>
+      <Tabs defaultActiveKey={ tabActive } onChange={ e => setTabActive( e ) }>
         <TabPane tab='Guru' key='guru'>
-          <Table columns={columns} dataSource={data} />
+          <Table columns={ columns } dataSource={ data } />
         </TabPane>
         <TabPane tab='Siswa' key='siswa'>
-        <Table columns={columns} dataSource={data2} />
+          <Table columns={ columns } dataSource={ data2 } />
         </TabPane>
       </Tabs>
-      <Modal title={`Tambah ${tabActive}`} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
-      <Form
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
-        autoComplete="off"
-      >
-        {renderForm}
-      </Form>
+      <Modal title={ `Tambah ${tabActive}` } isModalOpen={ isModalOpen } setIsModalOpen={ setIsModalOpen }>
+        <Form
+          name='basic'
+          labelCol={ { span: 8 } }
+          wrapperCol={ { span: 16 } }
+          style={ { maxWidth: 600 } }
+          initialValues={ { remember: true } }
+          autoComplete='off'
+        >
+          { renderForm }
+        </Form>
       </Modal>
     </div>
-  )
+  );
 };
 
 export default User;
