@@ -5,90 +5,54 @@ import { Modal } from '@/components';
 
 interface DataType {
   key: React.Key;
-  name: string;
-  age: number;
-  address: string;
+  id: number;
+  no_meja: number;
+  image: string;
 }
 
 const columns: ColumnsType<DataType> = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    filters: [
-      {
-        text: 'Joe',
-        value: 'Joe',
-      },
-      {
-        text: 'Jim',
-        value: 'Jim',
-      },
-      {
-        text: 'Submenu',
-        value: 'Submenu',
-        children: [
-          {
-            text: 'Green',
-            value: 'Green',
-          },
-          {
-            text: 'Black',
-            value: 'Black',
-          },
-        ],
-      },
-    ],
+    title: 'ID',
+    dataIndex: 'id',
+    
     // specify the condition of filtering result
     // here is that finding the name started with `value`
-    sorter: (a, b) => a.name.length - b.name.length,
     sortDirections: ['descend'],
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
+    title: 'No Meja',
+    dataIndex: 'no_meja',
     defaultSortOrder: 'descend',
-    sorter: (a, b) => a.age - b.age,
+    // sorter: (a, b) => a.age - b.age,
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    filters: [
-      {
-        text: 'London',
-        value: 'London',
-      },
-      {
-        text: 'New York',
-        value: 'New York',
-      },
-    ],
+    title: 'Table QR Code',
+    render: (img: any) => {
+      console.log(img, "IMG");
+      
+      return <img style={{width: 30, height: 30}} src={`http://localhost:8080/public/images/${img.image}`} />
+    }
   },
 ];
 
 const data = [
   {
     key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
+    id: 9,
+    no_meja: 500,
+    image: '500.png',
   },
   {
     key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
+    id: 12,
+    no_meja: 501,
+    image: '501.png',
   },
   {
     key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    id: 13,
+    no_meja: 505,
+    image: '505.png',
   },
 ];
 
@@ -108,7 +72,7 @@ const Table = () => {
         </Col>
         <Col>
         <Button type="primary" onClick={() => setIsModalOpen(true)}>
-          Tambah
+          Tambah Meja Baru
         </Button>
       </Col>
       </Row>
@@ -116,7 +80,7 @@ const Table = () => {
       <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
       <Form
         name="basic"
-        labelCol={{ span: 8 }}
+        labelCol={{ span: 5 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
@@ -125,20 +89,20 @@ const Table = () => {
         autoComplete="off"
       >
         <Form.Item
-          label="Username"
-          name="username"
+          label="No Meja"
+          name="no_meja"
           rules={[{ required: true, message: 'Please input your username!' }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label="Password"
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[{ required: true,  message: 'Please input your password!' }]}
         >
           <Input />
-        </Form.Item>
+        </Form.Item> */}
       </Form>
       </Modal>
     </div>

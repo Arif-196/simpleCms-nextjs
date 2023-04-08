@@ -5,90 +5,97 @@ import { Modal } from '@/components';
 
 interface DataType {
   key: React.Key;
+  id: number;
   name: string;
-  age: number;
-  address: string;
+  price: number;
+  discount: number;
+  qty: number;
+  image: string;
+  category: string;
 }
 
 const columns: ColumnsType<DataType> = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    filters: [
-      {
-        text: 'Joe',
-        value: 'Joe',
-      },
-      {
-        text: 'Jim',
-        value: 'Jim',
-      },
-      {
-        text: 'Submenu',
-        value: 'Submenu',
-        children: [
-          {
-            text: 'Green',
-            value: 'Green',
-          },
-          {
-            text: 'Black',
-            value: 'Black',
-          },
-        ],
-      },
-    ],
+    title: 'ID',
+    dataIndex: 'id',
+    
     // specify the condition of filtering result
     // here is that finding the name started with `value`
-    sorter: (a, b) => a.name.length - b.name.length,
+    // sorter: (a, b) => a.name.length - b.name.length,
     sortDirections: ['descend'],
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
+    title: 'Nama Produk',
+    dataIndex: 'name',
     defaultSortOrder: 'descend',
-    sorter: (a, b) => a.age - b.age,
+    // sorter: (a, b) => a.age - b.age,
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    filters: [
-      {
-        text: 'London',
-        value: 'London',
-      },
-      {
-        text: 'New York',
-        value: 'New York',
-      },
-    ],
+    title: 'Harga',
+    dataIndex: 'price',
+    
+  },
+  {
+    title: 'Discount',
+    dataIndex: 'discount',
+    
+  },
+  {
+    title: 'Qty',
+    dataIndex: 'qty',
+    
+  },
+  {
+    title: 'Gambar',
+    dataIndex: 'image',
+    render: (img: any) => <img style={{width: 30}} src={`http://localhost:8080/public/product/${img}`} />
+  },{
+    title: 'Category',
+    dataIndex: 'category',
+    
   },
 ];
 
 const data = [
   {
     key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
+    id: 1,
+    name: 'Pecel Lele',
+    price: 15000,
+    discount: 0,
+    qty: 10,
+    image: '2.jpeg',
+    category: "MAKANAN"
   },
   {
     key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
+    id: 2,
+    name: 'Pecel Ayam',
+    price: 15000,
+    discount: 0,
+    qty: 10,
+    image: '2.jpeg',
+    category: "MAKANAN"
   },
   {
     key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
+    id: 3,
+    name: 'Aqua Botol 500ml',
+    price: 4000,
+    discount: 0,
+    qty: 10,
+    image: '2.jpeg',
+    category: "MINUMAN"
   },
   {
     key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    id: 4,
+    name: 'Es Teh Manis',
+    price: 5000,
+    discount: 0,
+    qty: 10,
+    image: '2.jpeg',
+    category: "MINUMAN"
   },
 ];
 
@@ -108,7 +115,7 @@ const Product = () =>  {
         </Col>
         <Col>
         <Button type="primary" onClick={() => setIsModalOpen(true)}>
-          Tambah
+          Tambah Produk
         </Button>
       </Col>
       </Row>
@@ -116,26 +123,58 @@ const Product = () =>  {
       <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
       <Form
         name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
         // onFinish={onFinish}
         // onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+         <Form.Item
+          label="Produk"
+          name="nameProduk"
+          rules={[{ required: true, message: 'Please input Product Name!' }]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          label="Harga"
+          name="harga"
+          rules={[{ required: true, message: 'Please input Product Price!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Discount"
+          name="discount"
+          rules={[{ required: false, message: 'Please input Product Price!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Qty"
+          name="qty"
+          rules={[{ required: true, message: 'Please input Product Price!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Gambar"
+          name="image"
+          rules={[{ required: true, message: 'Please input Product Image!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Category"
+          name="type"
+          rules={[{ required: true, message: 'Please input Product Category!' }]}
         >
           <Input />
         </Form.Item>
