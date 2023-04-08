@@ -12,6 +12,7 @@ const listNav = [
 
 const Siderbar = ({children}:any) => {
   const router = useRouter();
+  // console.log(router, "<-------")
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -25,8 +26,9 @@ const Siderbar = ({children}:any) => {
           console.log(broken);
         }}
         onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
+          console.log(collapsed, type)
         }}
+        collapsed={false}
       >
         <div className="logo" />
         <Menu
