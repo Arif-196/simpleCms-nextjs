@@ -1,27 +1,30 @@
 import React from 'react';
-import { Modal as AntdModal} from 'antd';
+import { Modal as AntdModal } from 'antd';
 
 type ModalType =  {
   isModalOpen?: boolean
   setIsModalOpen?:any
   children?:React.ReactNode
   title?:string
+  footer?:React.ReactNode
 }
 
-const Modal = ({isModalOpen, setIsModalOpen, title, children = null}: ModalType) => {
+const Modal = ( {
+  isModalOpen, setIsModalOpen, title, children = null, footer
+}: ModalType ) => {
 
   const handleOk = () => {
-    setIsModalOpen(false);
+    setIsModalOpen( false );
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    setIsModalOpen( false );
   };
 
   return (
     <>
-      <AntdModal title={title} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        {children}
+      <AntdModal title={ title } open={ isModalOpen } onOk={ handleOk } onCancel={ handleCancel } footer={ footer }>
+        { children }
       </AntdModal>
     </>
   );

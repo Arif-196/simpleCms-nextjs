@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, {
+  useCallback, useMemo, useState
+} from 'react';
 import {
-  Button, Col, Form, Input, Row, Table
+  Col, Form, Input, Row, Select, Table, Upload, message
 } from 'antd';
-import type { ColumnsType, TableProps } from 'antd/es/table';
-import { Modal } from '@/components';
+import { UploadOutlined } from '@ant-design/icons';
+
+import type { ColumnsType } from 'antd/es/table';
+import { Modal, Button } from '@/components';
+import { baseurl as BASE_URL } from '../config';
 import Image from 'next/image';
+import { fetchHandler, postHandler } from '@/fetchHandler';
+import { endpoints } from '@/endpoints';
+import { useRouter } from 'next/router';
 
 interface DataType {
   key: React.Key;
@@ -17,30 +25,20 @@ interface DataType {
   category: string;
 }
 
-const columns: ColumnsType<DataType> = [
+const columns = ( imgUrl:string ):ColumnsType<DataType> => [
   {
     title: 'ID',
     dataIndex: 'id',
-    
-    // specify the condition of filtering result
-    // here is that finding the name started with `value`
-    // sorter: (a, b) => a.name.length - b.name.length,
     sortDirections: ['descend'],
   },
   {
     title: 'Nama Produk',
     dataIndex: 'name',
     defaultSortOrder: 'descend',
-    // sorter: (a, b) => a.age - b.age,
   },
   {
     title: 'Harga',
     dataIndex: 'price',
-    
-  },
-  {
-    title: 'Discount',
-    dataIndex: 'discount',
     
   },
   {
@@ -51,7 +49,7 @@ const columns: ColumnsType<DataType> = [
   {
     title: 'Gambar',
     dataIndex: 'image',
-    render: ( img: any ) => <Image alt='hello' style={ { width: 30 } } src={ `http://localhost:8080/public/product/${img}` } />
+    render: ( img: any ) => <Image alt='hello' width={ 30 } height={ 30 } src={ `${imgUrl}/public/product/${img}` } />
   },
   {
     title: 'Category',
@@ -60,56 +58,48 @@ const columns: ColumnsType<DataType> = [
   },
 ];
 
-const data = [
-  {
-    key: '1',
-    id: 1,
-    name: 'Pecel Lele',
-    price: 15000,
-    discount: 0,
-    qty: 10,
-    image: '2.jpeg',
-    category: 'MAKANAN'
-  },
-  {
-    key: '2',
-    id: 2,
-    name: 'Pecel Ayam',
-    price: 15000,
-    discount: 0,
-    qty: 10,
-    image: '2.jpeg',
-    category: 'MAKANAN'
-  },
-  {
-    key: '3',
-    id: 3,
-    name: 'Aqua Botol 500ml',
-    price: 4000,
-    discount: 0,
-    qty: 10,
-    image: '2.jpeg',
-    category: 'MINUMAN'
-  },
-  {
-    key: '4',
-    id: 4,
-    name: 'Es Teh Manis',
-    price: 5000,
-    discount: 0,
-    qty: 10,
-    image: '2.jpeg',
-    category: 'MINUMAN'
-  },
-];
-
-const onChange: TableProps<DataType>['onChange'] = ( pagination, filters, sorter, extra ) => {
-  console.log( 'params', pagination, filters, sorter, extra );
-};
-
-const Product = () =>  {
+const Product = ( { baseurl, products }: any ) =>  {
 
   const [isModalOpen, setIsModalOpen] = useState( false );
+  const [form] = Form.useForm();
+  const router = useRouter();
+
+  const factoryProduct = useMemo( () => {
+    if ( products && products.length ) {
+
+      return products.map( ( item:any, index:number ) => {
+        return {
+          ...item,
+          key: index
+        };
+      } );
+    }
+
+    return [];
+
+  }, [products] );
+
+  const handleFininsh = useCallback( async() => {
+    try {
+      const fields = form.getFieldsValue();
+      const formData = new FormData();
+      Object.keys( fields ).forEach( key => {
+        if ( key === 'image' ) {
+          formData.append( key, fields[key].fileList[0]?.originFileObj );
+        } else {
+          formData.append( key, fields[key] );
+        }
+      } );
+      formData.append( 'type', fields.categoryId === '1' ? 'MINUMAN' : 'MAKANAN' );
+      formData.append( 'userId', '20' );
+
+      await postHandler( endpoints.products, 'POST', formData, true );
+      router.reload();
+    } catch ( error ) {
+      message.error( 'terjadi kesalahan', 1000 );
+    }
+
+  }, [router, form] );
 
   return (
     <div>
@@ -123,21 +113,35 @@ const Product = () =>  {
           </Button>
         </Col>
       </Row>
-      <Table columns={ columns } dataSource={ data } onChange={ onChange } />
-      <Modal isModalOpen={ isModalOpen } setIsModalOpen={ setIsModalOpen }>
+      <Table columns={ columns( baseurl ) } dataSource={ factoryProduct } />
+      <Modal
+        isModalOpen={ isModalOpen }
+        setIsModalOpen={ setIsModalOpen }
+        footer={ [
+          <Button
+            key='back'
+            label='Batal'/>, <Button
+            label='Tambah'
+            key='submit'
+            type='primary'
+            form='formSubmit'
+            htmlType='submit'
+          />
+        ] }
+      >
         <Form
-          name='basic'
           labelCol={ { span: 5 } }
           wrapperCol={ { span: 15 } }
           style={ { maxWidth: 600 } }
           initialValues={ { remember: true } }
-          // onFinish={onFinish}
-          // onFinishFailed={onFinishFailed}
           autoComplete='off'
+          form={ form }
+          onFinish={ handleFininsh }
+          id='formSubmit'
         >
           <Form.Item
             label='Produk'
-            name='nameProduk'
+            name='namaProduk'
             rules={ [
               {
                 required: true,
@@ -147,10 +151,9 @@ const Product = () =>  {
           >
             <Input />
           </Form.Item>
-
           <Form.Item
             label='Harga'
-            name='harga'
+            name='hargaProduk'
             rules={ [
               {
                 required: true,
@@ -160,20 +163,6 @@ const Product = () =>  {
           >
             <Input />
           </Form.Item>
-
-          <Form.Item
-            label='Discount'
-            name='discount'
-            rules={ [
-              {
-                required: false,
-                message: 'Please input Product Price!'
-              }
-            ] }
-          >
-            <Input />
-          </Form.Item>
-
           <Form.Item
             label='Qty'
             name='qty'
@@ -186,36 +175,49 @@ const Product = () =>  {
           >
             <Input />
           </Form.Item>
-
           <Form.Item
-            label='Gambar'
             name='image'
+            label='Gambar'
             rules={ [
               {
                 required: true,
-                message: 'Please input Product Image!'
+                message: 'Please upload Product Image!'
               }
             ] }
           >
-            <Input />
+            <Upload name='logo' action='/upload.do' listType='picture'>
+              <Button icon={ <UploadOutlined /> }>Click to upload</Button>
+            </Upload>
           </Form.Item>
-
           <Form.Item
             label='Category'
-            name='type'
+            name='categoryId'
             rules={ [
               {
                 required: true,
                 message: 'Please input Product Category!'
               }
-            ] }
-          >
-            <Input />
+            ] }>
+            <Select>
+              <Select.Option value='1'>MINUMAN</Select.Option>
+              <Select.Option value='2'>MAKANAN</Select.Option>
+            </Select>
           </Form.Item>
         </Form>
       </Modal>
     </div>
   );
 };
+
+export async function getStaticProps() {
+  const response = await fetchHandler( endpoints.products );
+  
+  return {
+    props: {
+      baseurl: BASE_URL,
+      products: response.data
+    }
+  };
+}
 
 export default Product;

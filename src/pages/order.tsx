@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Button, Col, Form, Input, Row, Table
 } from 'antd';
-import type { ColumnsType, TableProps } from 'antd/es/table';
+import type { ColumnsType } from 'antd/es/table';
 import { Modal } from '@/components';
+import { fetchHandler, postHandler } from '@/fetchHandler';
+import { endpoints } from '@/endpoints';
+
+import { baseurl as BASE_URL } from '../config';
 
 interface DataType {
   key: React.Key;
@@ -15,6 +19,7 @@ interface DataType {
   jumlah_order: number;
   total_price: number;
   create_at: string;
+  order_id?:any
 }
 
 const columns: ColumnsType<DataType> = [
@@ -25,17 +30,12 @@ const columns: ColumnsType<DataType> = [
   {
     title: 'No Meja',
     dataIndex: 'no_meja',
-    
-    // specify the condition of filtering result
-    // here is that finding the name started with `value`
-    // sorter: (a, b) => a.name.length - b.name.length,
     sortDirections: ['descend'],
   },
   {
     title: 'Nama Customer',
     dataIndex: 'customer_name',
     defaultSortOrder: 'descend',
-    // sorter: (a, b) => a.age - b.age,
   },
   {
     title: 'Kontak Customer',
@@ -46,10 +46,6 @@ const columns: ColumnsType<DataType> = [
     dataIndex: 'status'
   },
   {
-    title: 'Total Produk',
-    dataIndex: 'jumlah_order'
-  },
-  {
     title: 'Total Belanja',
     dataIndex: 'total_price',
   },
@@ -58,62 +54,24 @@ const columns: ColumnsType<DataType> = [
     dataIndex: 'create_at',
   },
 ];
-
-const data = [
-  {
-    key: '1',
-    id: 1,
-    no_meja: 505,
-    customer_name: 'John Brown',
-    customer_contact: '0812-6785-3412',
-    status: 'on_progress',
-    jumlah_order: 5,
-    total_price: 70000,
-    create_at: '02-04-2023'
-  },
-  {
-    key: '2',
-    id: 2,
-    no_meja: 505,
-    customer_name: 'John Brown',
-    customer_contact: '0812-6785-3412',
-    status: 'on_progress',
-    jumlah_order: 5,
-    total_price: 70000,
-    create_at: '02-04-2023'
-  },
-  {
-    key: '3',
-    id: 3,
-    no_meja: 505,
-    customer_name: 'John Brown',
-    customer_contact: '0812-6785-3412',
-    status: 'on_progress',
-    jumlah_order: 5,
-    total_price: 70000,
-    create_at: '02-04-2023'
-  },
-  {
-    key: '4',
-    id: 4,
-    no_meja: 505,
-    customer_name: 'John Brown',
-    customer_contact: '0812-6785-3412',
-    status: 'on_progress',
-    jumlah_order: 5,
-    total_price: 70000,
-    create_at: '02-04-2023'
-  },
-];
-
-const onChange: TableProps<DataType>['onChange'] = ( pagination, filters, sorter, extra ) => {
-  console.log( 'params', pagination, filters, sorter, extra );
-};
-
-const Order = () =>  {
+const Order = ( { orders }:any ) =>  {
 
   const [isModalOpen, setIsModalOpen] = useState( false );
   const [openModalDetail, setOpenModalDetail] = useState( false );
+
+  const factoryOrders = useMemo( () => {
+    if ( orders && orders.length ) {
+
+      return orders.map( ( item:any, index:number ) => {
+        return {
+          ...item,
+          key: index
+        };
+      } );
+    }
+
+    return [];
+  }, [orders] );
 
   return (
     <div>
@@ -127,13 +85,15 @@ const Order = () =>  {
           </Button>
         </Col>
       </Row>
-      <Table columns={ columns } dataSource={ data } onChange={ onChange } onRow={ ( record, rowIndex ) => {
-        return {
-          onClick: event => {
-            setOpenModalDetail( true );
-          }, // click row
-        };
-      } }/>
+      <Table columns={ columns } dataSource={ factoryOrders }
+        onRow={ ( record, rowIndex ) => {
+          return {
+            onClick: async() => {
+              const response = await postHandler( `${endpoints.invoice}/${record.order_id}`, 'GET' );
+              setOpenModalDetail( true );
+            }, // click row
+          };
+        } }/>
 
       <Modal
         isModalOpen={ isModalOpen }
@@ -198,4 +158,15 @@ const Order = () =>  {
   );
 };
 
+export async function getStaticProps() {
+  const response = await fetchHandler( endpoints.orders );
+  const orders = response.data;
+  
+  return {
+    props: {
+      baseurl: BASE_URL,
+      orders
+    }
+  };
+}
 export default Order;
