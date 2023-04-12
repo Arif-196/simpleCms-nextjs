@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
-  Button, Col, Form, Input, Row, Table
+  Button, Col, Form, Input, Row, Table, message
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { Modal } from '@/components';
 import { fetchHandler, postHandler } from '@/fetchHandler';
 import { endpoints } from '@/endpoints';
+import { useRouter } from 'next/router';
 
 import { baseurl as BASE_URL } from '../config';
 
@@ -22,7 +23,7 @@ interface DataType {
   order_id?:any
 }
 
-const columns: ColumnsType<DataType> = [
+const columns = (handleUpdateStatus: any) : ColumnsType<DataType> => [
   {
     title: 'ID',
     dataIndex: 'id'
@@ -53,13 +54,36 @@ const columns: ColumnsType<DataType> = [
     title: 'Tanggal',
     dataIndex: 'create_at',
   },
+  {
+    title: 'Aksi',
+    render:(item: any) => {
+      if(item.status === "on_progress") {
+        return <Button 
+        onClick={e => {
+          e.stopPropagation()
+          handleUpdateStatus(item)
+        }}>
+          Selesaikan Pembayaran
+        </Button>
+      
+      }
+      return <p>Selesai</p>
+    }
+  },
 ];
+
+
+
 const Order = ( { orders }:any ) =>  {
 
   const [isModalOpen, setIsModalOpen] = useState( false );
   const [openModalDetail, setOpenModalDetail] = useState( false );
+  const [detailOrder, setDetailORder] = useState([])
+  const router = useRouter();
 
   const factoryOrders = useMemo( () => {
+    
+  
     if ( orders && orders.length ) {
 
       return orders.map( ( item:any, index:number ) => {
@@ -72,6 +96,36 @@ const Order = ( { orders }:any ) =>  {
 
     return [];
   }, [orders] );
+  
+  const handleUpdateStatus = useCallback( async(item: any) => {
+    try {
+      const response = await postHandler(`${endpoints.updateStatusOrder}/${item.order_id}`, "PUT",
+       {status: "success"})
+
+       router.reload()
+      
+
+    } catch ( error ) {
+      message.error( 'terjadi kesalahan', 1000 );
+    }
+
+  }, [router] );
+  
+  const renderDetailOrder = useMemo(() => {
+    if(detailOrder && detailOrder.length) {
+      return detailOrder.map((item: any, index: number) => {
+        return (
+          <React.Fragment>
+          <p>Product Id : {item.product_id}</p>
+          <p>Nama Product : {item.name}</p>
+          <p>Qty : {item.qty}</p>
+          <p>Harga Produk : {item.price}</p>
+          <hr />
+          </React.Fragment>
+        )
+      })
+    }
+  }, [detailOrder])
 
   return (
     <div>
@@ -85,11 +139,12 @@ const Order = ( { orders }:any ) =>  {
           </Button>
         </Col>
       </Row>
-      <Table columns={ columns } dataSource={ factoryOrders }
+      <Table columns={ columns(handleUpdateStatus) } dataSource={ factoryOrders }
         onRow={ ( record, rowIndex ) => {
           return {
             onClick: async() => {
               const response = await postHandler( `${endpoints.invoice}/${record.order_id}`, 'GET' );
+              setDetailORder(response.data)
               setOpenModalDetail( true );
             }, // click row
           };
@@ -138,20 +193,7 @@ const Order = ( { orders }:any ) =>  {
         setIsModalOpen={ setOpenModalDetail }
       // footer = {null}
       >
-        <p>Product Id : 15</p>
-        <p>Nama Product : Pecel Ayam</p>
-        <p>Qty : 3</p>
-        <p>Harga Produk : 15000</p>
-        <hr />
-        <p>Product Id : 17</p>
-        <p>Nama Product : Pangsit</p>
-        <p>Qty : 3</p>
-        <p>Harga Produk : 15000</p>
-        <hr />
-        <p>Product Id : 18</p>
-        <p>Nama Product : Mie Ayam</p>
-        <p>Qty : 3</p>
-        <p>Harga Produk : 15000</p>
+        {renderDetailOrder}
      
       </Modal>
     </div>

@@ -49,7 +49,7 @@ const columns = ( imgUrl:string ):ColumnsType<DataType> => [
   {
     title: 'Gambar',
     dataIndex: 'image',
-    render: ( img: any ) => <Image alt='hello' width={ 30 } height={ 30 } src={ `${imgUrl}/public/product/${img}` } />
+    render: ( img: any ) => <Image alt='hello' width={ 30 } height={ 30 } src={ `http://localhost:8080/public/product/${img}` } />
   },
   {
     title: 'Category',

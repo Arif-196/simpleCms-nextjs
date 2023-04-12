@@ -20,11 +20,14 @@ const fetchHandler = async( endpoint: string, method = 'GET', body?: any ) => {
 
 const postHandler = async( endpoint: string, method:string, body?: any, isFormData = false ) => {
   const uri = `${baseurl}${endpoint}`;
+  const headers = isFormData?{}:{'Content-Type': 'application/json'} as any
 
   try {
     const response = await fetch( uri, {
+
       method: method,
       body: method === 'GET' ? undefined : isFormData ? body : JSON.stringify( body ),
+      headers
     } );
   
     const results = await response.json();
