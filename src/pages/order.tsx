@@ -1,12 +1,15 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, {
+  useMemo, useState, useCallback
+} from 'react';
 import {
-  Button, Col, Form, Input, Row, Table, message
+  Button, Col, Form, Input, Row, Select, Table, message
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { Modal } from '@/components';
 import { fetchHandler, postHandler } from '@/fetchHandler';
 import { endpoints } from '@/endpoints';
 import { useRouter } from 'next/router';
+import moment from 'moment';
 
 import { baseurl as BASE_URL } from '../config';
 
@@ -23,7 +26,7 @@ interface DataType {
   order_id?:any
 }
 
-const columns = (handleUpdateStatus: any) : ColumnsType<DataType> => [
+const columns = ( handleUpdateStatus: any ) : ColumnsType<DataType> => [
   {
     title: 'ID',
     dataIndex: 'id'
@@ -53,36 +56,44 @@ const columns = (handleUpdateStatus: any) : ColumnsType<DataType> => [
   {
     title: 'Tanggal',
     dataIndex: 'create_at',
+    render: ( value => {
+      return moment( value ).format( 'LLL' );
+    } )
   },
   {
     title: 'Aksi',
-    render:(item: any) => {
-      if(item.status === "on_progress") {
-        return <Button 
-        onClick={e => {
-          e.stopPropagation()
-          handleUpdateStatus(item)
-        }}>
-          Selesaikan Pembayaran
-        </Button>
+    render: ( item: any ) => {
+      if ( item.status === 'on_progress' ) {
+        return <Select defaultValue={ item.status }
+          onClick={ z => {
+            z.stopPropagation();
+          } }
+          onSelect={ e => {
+            handleUpdateStatus( item, e );
+          } } placeholder={ 'Pilih Status' } options={ [
+            {
+              value: 'success',
+              label: 'Success'
+            }, {
+              value: 'cancelled',
+              label: 'Cancel'
+            }
+          ] } />;
       
       }
-      return <p>Selesai</p>
+      return <p>{ item.status }</p>;
     }
   },
 ];
-
-
 
 const Order = ( { orders }:any ) =>  {
 
   const [isModalOpen, setIsModalOpen] = useState( false );
   const [openModalDetail, setOpenModalDetail] = useState( false );
-  const [detailOrder, setDetailORder] = useState([])
+  const [detailOrder, setDetailORder] = useState( [] );
   const router = useRouter();
 
   const factoryOrders = useMemo( () => {
-    
   
     if ( orders && orders.length ) {
 
@@ -97,13 +108,11 @@ const Order = ( { orders }:any ) =>  {
     return [];
   }, [orders] );
   
-  const handleUpdateStatus = useCallback( async(item: any) => {
+  const handleUpdateStatus = useCallback( async( item: any, status: string ) => {
     try {
-      const response = await postHandler(`${endpoints.updateStatusOrder}/${item.order_id}`, "PUT",
-       {status: "success"})
+      const response = await postHandler( `${endpoints.updateStatusOrder}/${item.id}`, 'PUT', { status } );
 
-       router.reload()
-      
+      router.reload();
 
     } catch ( error ) {
       message.error( 'terjadi kesalahan', 1000 );
@@ -111,21 +120,22 @@ const Order = ( { orders }:any ) =>  {
 
   }, [router] );
   
-  const renderDetailOrder = useMemo(() => {
-    if(detailOrder && detailOrder.length) {
-      return detailOrder.map((item: any, index: number) => {
+  const renderDetailOrder = useMemo( () => {
+    if ( detailOrder && detailOrder.length ) {
+      return detailOrder.map( ( item: any, index: number ) => {
+        console.log( item, 'DDD' );
         return (
-          <React.Fragment>
-          <p>Product Id : {item.product_id}</p>
-          <p>Nama Product : {item.name}</p>
-          <p>Qty : {item.qty}</p>
-          <p>Harga Produk : {item.price}</p>
-          <hr />
+          <React.Fragment key={ index }>
+            <p>Product Id : { item.product_id }</p>
+            <p>Nama Product : { item.name }</p>
+            <p>Qty : { item.qty }</p>
+            <p>Harga Produk : { item.price }</p>
+            <hr />
           </React.Fragment>
-        )
-      })
+        );
+      } );
     }
-  }, [detailOrder])
+  }, [detailOrder] );
 
   return (
     <div>
@@ -139,12 +149,12 @@ const Order = ( { orders }:any ) =>  {
           </Button>
         </Col>
       </Row>
-      <Table columns={ columns(handleUpdateStatus) } dataSource={ factoryOrders }
-        onRow={ ( record, rowIndex ) => {
+      <Table columns={ columns( handleUpdateStatus ) } dataSource={ factoryOrders }
+        onRow={ record => {
           return {
             onClick: async() => {
-              const response = await postHandler( `${endpoints.invoice}/${record.order_id}`, 'GET' );
-              setDetailORder(response.data)
+              const response = await postHandler( `${endpoints.invoice}/${record.id}`, 'GET' );
+              setDetailORder( response.data );
               setOpenModalDetail( true );
             }, // click row
           };
@@ -193,7 +203,7 @@ const Order = ( { orders }:any ) =>  {
         setIsModalOpen={ setOpenModalDetail }
       // footer = {null}
       >
-        {renderDetailOrder}
+        { renderDetailOrder }
      
       </Modal>
     </div>
