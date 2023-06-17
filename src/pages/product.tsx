@@ -2,9 +2,10 @@ import React, {
   useCallback, useMemo, useState
 } from 'react';
 import {
-  Col, Form, Input, Row, Select, Table, Upload, message
+  Col, Form, Input, Row, Select, Switch, Table, Upload, message
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+// import {CloseOutline} from
 
 import type { ColumnsType } from 'antd/es/table';
 import { Modal, Button } from '@/components';
@@ -25,7 +26,7 @@ interface DataType {
   category: string;
 }
 
-const columns = ( imgUrl:string ):ColumnsType<DataType> => [
+const columns = ( imgUrl:string, handleUpdateStatus: any ):ColumnsType<DataType> => [
   {
     title: 'ID',
     dataIndex: 'id',
@@ -56,6 +57,16 @@ const columns = ( imgUrl:string ):ColumnsType<DataType> => [
     dataIndex: 'category',
     
   },
+  {
+    title: 'Produk Aktif',
+    render: ( item : any ) => {
+      return <Switch defaultChecked={ item.isActive === 'active' } onChange={ value => {
+        const checked = value ? 'active' : 'inActive';
+        handleUpdateStatus( item, checked );
+       
+      } } />;
+    }
+  }
 ];
 
 const Product = ( { baseurl, products }: any ) =>  {
@@ -101,6 +112,19 @@ const Product = ( { baseurl, products }: any ) =>  {
 
   }, [router, form] );
 
+  const handleUpdateStatus = useCallback( async( item: any, isActive: string ) => {
+    // console.log( item, 'ITEM' );
+    try {
+      const response = await postHandler( `${endpoints.updateStock}/${item.id}`, 'PUT', { isActive } );
+
+      router.reload();
+
+    } catch ( error ) {
+      message.error( 'terjadi kesalahan', 1000 );
+    }
+
+  }, [router] );
+
   return (
     <div>
       <Row justify='space-between'>
@@ -113,7 +137,7 @@ const Product = ( { baseurl, products }: any ) =>  {
           </Button>
         </Col>
       </Row>
-      <Table columns={ columns( baseurl ) } dataSource={ factoryProduct } />
+      <Table columns={ columns( baseurl, handleUpdateStatus ) } dataSource={ factoryProduct } />
       <Modal
         isModalOpen={ isModalOpen }
         setIsModalOpen={ setIsModalOpen }
