@@ -2,13 +2,12 @@ import React, { useMemo, useState } from 'react';
 import {
   Button, Col, Form, Input, Row, Table as AntdTable
 } from 'antd';
-import type { ColumnsType, TableProps } from 'antd/es/table';
-import {baseurl as BASE_URL} from "../config"
-import { fetchHandler, postHandler} from '@/fetchHandler';
+import type { ColumnsType } from 'antd/es/table';
+import { baseurl as BASE_URL } from '../config';
+import { fetchHandler } from '@/fetchHandler';
 import { endpoints } from '@/endpoints';
 import { Modal } from '@/components';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 
 interface DataType {
   key: React.Key;
@@ -32,41 +31,12 @@ const columns : ColumnsType<DataType> = [
   {
     title: 'Table QR Code',
     render: ( img: any ) => {
-      return <Image alt='ok' width={30}  height={30} src={ `http://localhost:8080/public/images/${img.no_meja}.png` } />;
+      return <Image alt='ok' width={ 30 } height={ 30 } src={ `http://localhost:8080/public/images/${img.no_meja}.png` } />;
     }
   },
 ];
 
-// const data = [
-//   {
-//     key: '1',
-//     id: 9,
-//     no_meja: 500,
-//     image: '500.png',
-//   },
-//   {
-//     key: '2',
-//     id: 12,
-//     no_meja: 501,
-//     image: '501.png',
-//   },
-//   {
-//     key: '3',
-//     id: 13,
-//     no_meja: 505,
-//     image: '505.png',
-//   },
-// ];
-
-// // const Table = ({baseurl, products}: any) => {
-
-// // }
-
-// const onChange: TableProps<DataType>['onChange'] = ( pagination, filters, sorter, extra ) => {
-//   console.log( 'params', pagination, filters, sorter, extra );
-// };
-
-const Table = ({baseurl, tables }: any) => {
+const Table = ( { baseurl, tables }: any ) => {
 
   const [isModalOpen, setIsModalOpen] = useState( false );
   const factoryTable = useMemo( () => {
@@ -83,8 +53,6 @@ const Table = ({baseurl, tables }: any) => {
     return [];
 
   }, [tables] );
-  console.log(factoryTable, "<=====");
-  
 
   return (
     <div>

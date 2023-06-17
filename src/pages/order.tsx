@@ -64,7 +64,7 @@ const columns = ( handleUpdateStatus: any ) : ColumnsType<DataType> => [
     title: 'Aksi',
     render: ( item: any ) => {
       if ( item.status === 'on_progress' ) {
-        return <Select defaultValue={ item.status }
+        return <Select defaultValue={ 'Pilih Status' }
           onClick={ z => {
             z.stopPropagation();
           } }
@@ -123,7 +123,6 @@ const Order = ( { orders }:any ) =>  {
   const renderDetailOrder = useMemo( () => {
     if ( detailOrder && detailOrder.length ) {
       return detailOrder.map( ( item: any, index: number ) => {
-        console.log( item, 'DDD' );
         return (
           <React.Fragment key={ index }>
             <p>Product Id : { item.product_id }</p>
